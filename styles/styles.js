@@ -1,4 +1,6 @@
 import { StyleSheet } from 'react-native';
+import {useFonts} from 'expo-font';
+
 
 export default styles = StyleSheet.create({
 
@@ -14,11 +16,9 @@ header: {
 footer: {
     backgroundColor: 'orange',
     padding: 10,
-    marginTop: 10,
     bottom: 0,
     alignItems: 'center',
     },
-
 
 //Alkometer styling
 container: {
@@ -27,12 +27,33 @@ container: {
     alignItems: 'center',
     justifyContent: 'center',
     },
-//Text styling
-text: {
+
+//Heading styling
+heading: {
     color: 'black',
     fontSize: 20,
     textAlign: 'center',
+    fontFamily: 'SomeTypoMono',
     },
+
+//Label styling
+label: {
+    color: '#daa7fc',
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: 'SomeTypoMono',
+    marginTop: 12,
+    },
+
+//Bottles, hours text styling
+labelBh: {
+    color: '#daa7fc',
+    fontSize: 16,
+    marginLeft: 12,
+    marginTop: 6,
+    fontFamily: 'SomeTypoMono',
+    },
+
 //TextInput styling
 textInput: {
     height: 40,
@@ -46,51 +67,59 @@ textInput: {
     },
 //'Calculate' button styling
 calculateButton: {
-    width: 100,
-    height: 50,
+    width: 150,
+    height: 40,
     margin: 12,
+    marginLeft: 115,
+    bottom: -10,
     borderWidth: 1,
-    backgroundColor: '#daa7fc',   
-    bottom: 30,
+    borderColor: 'orange',
+    borderRadius: 10,
+    backgroundColor: '#daa7fc', 
+    textAlign: 'center',
+    fontFamily: 'SomeTypoMono',
+    padding: 12,
     },
 
 buttonTitle: {
     color: 'black',
     fontSize: 24,
     textAlign: 'center',
-    fontWeight: 'bold',
+    fontFamily: 'SomeTypoMono',
     },
 
 //NumericInput styling
 numericInput: {
-    totalWidth: 200,
     borderColor: 'orange',
-    textColor: 'black',
-    buttonBackgroundColor: '#daa7fc',
-    borderRadius: 10,
+    iconStyle: { color: 'oramge' },
+    margin: 12,
     },
+numericInputBackground: '#daa7fc',
+numericInputTextColor: 'orange',
+numericIconStyle: { color: 'orange' },
+    
 //RadioButton styling
 radioBtn: {
-    color: 'black',
-    justifyContent: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
     },
-});
+checkedCircleBtn: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#daa7fc',
+    },
+
 //Tumma tila
-const darkMode = StyleSheet.create({
-    container: {
-    flex: 1,
-    backgroundColor: 'black',
-    color: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    }
-});
+darkModeStyles: {
+    backgroundColor: 'white',
+    },
 
 //Vaalea tila
-const lightMode = StyleSheet.create({
-    container: {
-    ...darkMode.container,
-    backgroundColor: 'white',
-    }
+lightModeStyles: {
+    backgroundColor: 'black',
+    },
+
 });
+
+

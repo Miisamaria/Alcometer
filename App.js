@@ -1,94 +1,124 @@
 import  React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Button, Text, ScrollView, View, Switch } from 'react-native';
+import { Button, Text, ScrollView, View, Switch, Alert, TouchableOpacity } from 'react-native';
 import styles from './styles/styles';
 import {darkMode, lightMode} from './styles/styles';
 import { RadioButton, TextInput } from 'react-native-paper';
 import NumericInput from 'react-native-numeric-input';
-import {radioBtn, textInput, calculateButton, numericInput, switchBtn} from './styles/styles';
 import Header from './components/header';
 import Footer from './components/footer';
+import {useFonts} from 'expo-font';
 
 //Alkometrin teko
 export default function App() {
 
-  const [value, setValue] = React.useState('first');
+  //Fontin lataus
+  const [loaded] = useFonts({
+    SomeTypoMono: require('./assets/fonts/SomeTypoMono.ttf'),
+    });
 
-  const [isOn, setIsOn] = useState(false);
-
-  const [valueB, setValueB] = useState(0);
-
-  const [valueH, setValueH] = useState(0);
-
-  const [Weight, setWeight] = useState(0);
-  const [bacResult, setBacResult] = useState(0);
-
-  const calculateBAC = () => {
-  const Litres = valueB * 0.33;
-  const Grams = Litres * 8 * 4.5;
-  const Burning = Weight / 10;
-  const Left = Grams - (Burning * valueH);
-  const ResultMale = Grams / (Weight * 0.7);
-  const ResultFemale = Grams / (Weight * 0.6);
-  
-  if (value === 'first'){
-    let bacResult = ResultMale;
-    return bacResult;
-  }
-  else {
-    let bacResult = ResultFemale;
-    return bacResult;
-  }
-
-  };
+  const [genre, setGenre] = React.useState('Male');
+  const [weight, setWeight] = useState("");
+  const [bottles, setBottles] = useState(0);
+  const [time, setTime] = useState(0);
+  const [result, setResult] = useState(0);
+  const [ok, setOk] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [bal, setBal] = useState(false);
 
 //Laskeminen
-  function calculate() {
-    console.log("Calculate pressed");
-  } 
+function handleButtonPress() {
+  if (weight === '') {
+  //Jos painoa ei ole syötetty, ilmoitetaan siitä
+    Alert.alert(
+      'You must enter your weight!',
+      'Please provide your weight before calculating.',
+      [
+        {
+          text: 'OK',
+          onPress: () => setOk(true),
+        },
+      ]
+    );
+    setBal(false);
+    return;
+  } else {
+    //showing results of bal when the calculate button is pressed
+    setBal(true);
+  }
+
+  let litres = bottles * 0.33;
+  let grams = litres * 8 * 4.5;
+  let burning = weight / 10;
+  let gramsLeft = grams - burning * time;
+  let answer = 0;
+//Sukupuolen mukaan laskeminen
+  if (genre === 'Male') {
+    answer = gramsLeft / (weight * 0.7);
+  }
+  if (genre === 'Female') {
+    answer = gramsLeft / (weight * 0.6);
+  }
+  //Jos vastaus on negatiivinen, asetetaan se nollaksi
+  if (answer < 0) {
+    answer = 0;
+  }
+  setResult(answer);}
 
   
-//Pullojen määrän asettaminen
-  function setBottles() {
-    console.log("Bottles set");
-  }
-  
-//Tuntien asettaminen
-  function setTime() {
-    console.log("Time set");
-  }
+
 //Tumma- ja vaaleatila
-let isDark = false;
-let myStyle = isDark ? styles.darkMode : styles.lightMode;
- 
-  function toggleSwitch() {
-    console.log("Switch pressed");
-    isDark = !isDark;
-    myStyle = isDark ? styles.darkMode : styles.lightMode;
-  }
+const toggleDarkMode = () => {
+  setIsDarkMode(!isDarkMode);
+}
 
+//Jos fontti ei lataudu, ei näytetä mitään
+  if (!loaded) {
+    return null;
+  }
 
   return( 
     <>
-    <Header style={styles.header} title='Alkometer' />
-    <ScrollView>
-      <Switch style={styles.switch} value={isOn} onValueChange={newValue => setIsOn(newValue)} 
-      thumbColor= 'black'
-      trackColor={{false: 'grey', true: 'orange'}}/>
-      <Text style={styles.text}>Weight</Text>
-        <TextInput style={styles.textInput} onChangeText={text => setWeight(text)} placeholder='Set your weight here' keyboardType='numeric'/>
-      <Text style={styles.text}>Bottles</Text>
-        <NumericInput style={styles.numericInput} onChange={v => setValueB(v)}/>
-      <Text style={styles.text}>Hours</Text>
-        <NumericInput style={styles.numericInput} onChange={v => setValueH(v)}/>
-          <RadioButton.Group onValueChange={newValue => setValue(newValue)} value={value}>
-            <Text style={styles.text}>Male</Text>
-              <RadioButton style={styles.radioBtn} value="first" />     
-            <Text style={styles.text}>Female</Text>
-              <RadioButton style={styles.radioBtn} value="second" />
+    <Header style={[styles.header, styles.heading,]} title='Alkometer' />
+    <ScrollView style={isDarkMode ? styles.darkModeStyles : styles.lightModeStyles}>
+      <Switch value={isDarkMode} onValueChange={toggleDarkMode} 
+      thumbColor= '#daa7fc'
+      trackColor={{false: 'grey', true: 'orange'}}
+      />
+      <Text style={styles.label}>Weight</Text>
+        <TextInput style={styles.textInput} onChangeText={(value) => setWeight(value)} placeholder='Set your weight here' keyboardType='numeric'/>
+      <Text style={styles.labelBh}>Bottles</Text>
+        <NumericInput minValue={0} onChange={v => setBottles(v)}
+          rightButtonBackgroundColor={styles.numericInputBackground}
+          leftButtonBackgroundColor={styles.numericInputBackground}
+          containerStyle={styles.numericInput}
+          textColor={styles.numericInputTextColor}
+          iconStyle={styles.numericIconStyle}
+          rounded
+        />
+      <Text style={styles.labelBh}>Hours</Text>
+        <NumericInput minValue={0} onChange={v => setTime(v)}
+          rightButtonBackgroundColor={styles.numericInputBackground}
+          leftButtonBackgroundColor={styles.numericInputBackground}
+          containerStyle={styles.numericInput}
+          textColor={styles.numericInputTextColor}
+          iconStyle={styles.numericIconStyle}
+          rounded
+        />
+          <RadioButton.Group onValueChange={newValue => setGenre(newValue)} value={genre}>
+            <Text style={styles.label}>Male</Text>
+              <RadioButton value="Male"
+              alignSelf='center'
+              />     
+            <Text style={styles.label}>Female</Text>
+              <RadioButton value="Female" 
+              alignSelf='center'
+              />
           </RadioButton.Group>
-      <Text>Blood alcohol level is : {bacResult}</Text>
-        <Button style={styles.calculateButton} title='Calculate' onPress={calculateBAC} />
+          {bal && <Text style={styles.label}>Blood alcohol level is : {result.toFixed(2)}</Text>}
+        <TouchableOpacity onPress={handleButtonPress}>
+          <Text style={styles.calculateButton}>Calculate</Text>
+      </TouchableOpacity>
+        
     </ScrollView>
     <Footer />
     </> 
